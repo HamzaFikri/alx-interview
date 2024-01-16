@@ -7,21 +7,23 @@ exactly n H characters in the file.
 
 
 def minOperations(n):
-    '''
-    returns min operations to get n Hs
-    '''
-    operations = 0
-    if n <= 1:
+    """
+    minOperations
+    Gets fewest # of operations needed to result in exactly n H characters
+    """
+    # all outputs should be at least 2 char: (min, Copy All => Paste)
+    if (n < 2):
         return 0
-    for i in range(2, n + 1):
-        '''
-        check if n could be broken into smaller parts
-        '''
-        while n % i == 0:
-            ''' reduce n into a smaller part '''
-            n = n / i
-            '''
-            if so add the nbr of smaller parts (in fact 1 copy and 4 paste)
-            '''
-            operations += i
-    return operations
+    ops, root = 0, 2
+    while root <= n:
+        # if n evenly divides by root
+        if n % root == 0:
+            # total even-divisions by root = total operations
+            ops += root
+            # set n to the remainder
+            n = n / root
+            # reduce root to find remaining smaller vals that evenly-divide n
+            root -= 1
+        # increment root until it evenly-divides n
+        root += 1
+    return ops
