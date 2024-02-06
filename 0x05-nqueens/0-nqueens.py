@@ -1,91 +1,73 @@
 #!/usr/bin/python3
-'''N Queens Challenge'''
-
+""" nqueens """
 import sys
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        sys.exit(1)
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    exit(1)
+if not sys.argv[1].isdigit():
+    print("N must be a number")
+    exit(1)
+if int(sys.argv[1]) < 4:
+    print("N must be at least 4")
+    exit(1)
+N = int(sys.argv[1])
+board = [[0 for i in range(N)]for j in range(N)]
+k = 1
 
-    try:
-        n = int(sys.argv[1])
-    except ValueError:
-        print('N must be a number')
-        exit(1)
 
-    if n < 4:
-        print('N must be at least 4')
-        exit(1)
+def print_sol(board):
+    global k
+    k = k + 1
+    S = []
+    for i in range(N):
+        for j in range(N):
+            if board[i][j] == 1:
+                S.append([i, j])
+    print(S)
 
-    solutions = []
-    placed_queens = []  # coordinates format [row, column]
-    stop = False
-    r = 0
-    c = 0
 
-    # iterate thru rows
-    while r < n:
-        goback = False
-        # iterate thru columns
-        while c < n:
-            # check is current column is safe
-            safe = True
-            for cord in placed_queens:
-                col = cord[1]
-                if(col == c or col + (r-cord[0]) == c or
-                        col - (r-cord[0]) == c):
-                    safe = False
-                    break
+def isSafe(board, row, col):
+    for i in range(col):
+        if (board[row][i]):
+            return False
+    i = row
+    j = col
+    while i >= 0 and j >= 0:
+        if(board[i][j]):
+            return False
+        i -= 1
+        j -= 1
+    i = row
+    j = col
+    while j >= 0 and i < N:
+        if(board[i][j]):
+            return False
+        i = i + 1
+        j = j - 1
+    return True
 
-            if not safe:
-                if c == n - 1:
-                    goback = True
-                    break
-                c += 1
-                continue
 
-            # place queen
-            cords = [r, c]
-            placed_queens.append(cords)
-            # if last row, append solution and reset all to last unfinished row
-            # and last safe column in that row
-            if r == n - 1:
-                solutions.append(placed_queens[:])
-                for cord in placed_queens:
-                    if cord[1] < n - 1:
-                        r = cord[0]
-                        c = cord[1]
-                for i in range(n - r):
-                    placed_queens.pop()
-                if r == n - 1 and c == n - 1:
-                    placed_queens = []
-                    stop = True
-                r -= 1
-                c += 1
-            else:
-                c = 0
-            break
-        if stop:
-            break
-        # on fail: go back to previous row
-        # and continue from last safe column + 1
-        if goback:
-            r -= 1
-            while r >= 0:
-                c = placed_queens[r][1] + 1
-                del placed_queens[r]  # delete previous queen coordinates
-                if c < n:
-                    break
-                r -= 1
-            if r < 0:
-                break
-            continue
-        r += 1
+def solving(board, col):
+    if (col == N):
+        print_sol(board)
+        return True
+    res = False
+    for i in range(N):
+        if (isSafe(board, i, col)):
+            board[i][col] = 1
+            res = solving(board, col + 1) or res
+            board[i][col] = 0
+    return res
 
-    for idx, val in enumerate(solutions):
-        if idx == len(solutions) - 1:
-            print(val, end='')
-        else:
-            print(val)
+
+def solve():
+    board = [[0 for j in range(N)]for i in range(N)]
+    if (solving(board, 0) is False):
+        print("Solution does not exist")
+        return
+    return
+
+
+solve()
